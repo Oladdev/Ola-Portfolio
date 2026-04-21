@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import {
   Github,
   Linkedin,
@@ -18,6 +19,9 @@ import {
   Twitter,
   Instagram,
   Ghost,
+  Loader,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 
 // --- DATA CONFIGURATION ---
@@ -37,7 +41,7 @@ const PROJECTS = [
     description:
       "A comprehensive web application designed to streamline campus transport services and connect users effectively.",
     challenges:
-      "Challeges: centering and justifying confusion, broken paragraph markup, small HTML structure mistakes",
+      "Challenges: centering and justifying confusion, broken paragraph markup, small HTML structure mistakes",
     tags: ["HTML", "CSS", "JavaScript"],
     links: {
       demo: "https://oladdev.github.io/TELSO/",
@@ -49,7 +53,7 @@ const PROJECTS = [
     description:
       "A streamlined verification interface that processes payment references with real-time feedback and success states.",
     challenges:
-      "Challeges: async request flow, reference parsing, conditional UI display after verification",
+      "Challenges: async request flow, reference parsing, conditional UI display after verification",
     tags: ["JavaScript", "DOM Manipulation", "CSS3"],
     links: {
       demo: "https://oladdev.github.io/Payment-Verification/",
@@ -61,7 +65,7 @@ const PROJECTS = [
     description:
       "A collaborative team portfolio website showcasing web and app development services with smooth interactions.",
     challenges:
-      "Challeges: how git remote works, why origin is not a command, how to properly pull from a remote repository",
+      "Challenges: how git remote works, why origin is not a command, how to properly pull from a remote repository",
     tags: ["React", "Framer Motion", "UI/UX"],
     links: {
       demo: "https://oladdev.github.io/The-Duo-Hub/",
@@ -73,7 +77,7 @@ const PROJECTS = [
     description:
       "A delightful frontend interface for a bakery, featuring product galleries and a warm, inviting design.",
     challenges:
-      "Challeges: responsive design issues, inconsistent styling, and accessibility concerns",
+      "Challenges: responsive design issues, inconsistent styling, and accessibility concerns",
     tags: ["HTML", "CSS", "JavaScript"],
     links: {
       demo: "https://oladdev.github.io/Sweet-Crumbs-Bakery/",
@@ -85,7 +89,7 @@ const PROJECTS = [
     description:
       "A functional task management tool allowing users to add, edit, and delete tasks with persistent state.",
     challenges:
-      "Challeges: managing task persistence, handling UI updates, and ensuring responsive design across devices",
+      "Challenges: managing task persistence, handling UI updates, and ensuring responsive design across devices",
     tags: ["JavaScript", "CSS", "HTML"],
     links: {
       demo: "https://oladdev.github.io/TO-DO-LIST/",
@@ -97,7 +101,7 @@ const PROJECTS = [
     description:
       "A classic interactive game featuring game logic, score tracking, and a clean user interface.",
     challenges:
-      "Challeges: implementing game logic, score tracking/reset, move overwriting, and draw detection",
+      "Challenges: implementing game logic, score tracking/reset, move overwriting, and draw detection",
     tags: ["JavaScript", "DOM Manipulation"],
     links: {
       demo: "https://oladdev.github.io/TIC-TAC-TOE-Game/",
@@ -187,6 +191,15 @@ const Card = ({ children, className = "" }) => (
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or null
+  const [submitMessage, setSubmitMessage] = useState("");
+
+  // Initialize EmailJS
+  useEffect(() => {
+    emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "");
+  }, []);
 
   // Toggle Dark Mode
   useEffect(() => {
@@ -198,6 +211,60 @@ export default function App() {
   }, [darkMode]);
 
   const toggleTheme = () => setDarkMode(!darkMode);
+
+  // Form Handlers
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setSubmitStatus("error");
+      setSubmitMessage("Please fill in all fields.");
+      setTimeout(() => setSubmitStatus(null), 5000);
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setSubmitStatus("error");
+      setSubmitMessage("Please enter a valid email address.");
+      setTimeout(() => setSubmitStatus(null), 5000);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+          to_email: import.meta.env.VITE_CONTACT_EMAIL,
+        }
+      );
+
+      setSubmitStatus("success");
+      setSubmitMessage("Message sent successfully! I'll get back to you soon.");
+      setFormData({ name: "", email: "", message: "" });
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } catch (error) {
+      console.error("Email send failed:", error);
+      setSubmitStatus("error");
+      setSubmitMessage(
+        "Failed to send message. Please try again or email me directly at pwreshy@gmail.com"
+      );
+      setTimeout(() => setSubmitStatus(null), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div
@@ -694,7 +761,7 @@ export default function App() {
             </a>
           </div>
 
-          <form className="max-w-md mx-auto space-y-4 mb-20 text-left">
+          <form className="max-w-md mx-auto space-y-4 mb-20 text-left" onSubmit={handleFormSubmit}>
             <div>
               <label
                 htmlFor="name"
@@ -705,8 +772,12 @@ export default function App() {
               <input
                 type="text"
                 id="name"
+                name="from_name"
+                value={formData.name}
+                onChange={handleFormChange}
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="Your Name"
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -719,8 +790,12 @@ export default function App() {
               <input
                 type="email"
                 id="email"
+                name="from_email"
+                value={formData.email}
+                onChange={handleFormChange}
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="you@example.com"
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -732,16 +807,47 @@ export default function App() {
               </label>
               <textarea
                 id="message"
+                name="message"
                 rows="4"
+                value={formData.message}
+                onChange={handleFormChange}
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="Hi Ola..."
+                disabled={isSubmitting}
               ></textarea>
             </div>
+            
+            {/* Status Message */}
+            {submitStatus && (
+              <div
+                className={`flex items-center gap-2 p-3 rounded-lg ${
+                  submitStatus === "success"
+                    ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-200"
+                    : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200"
+                }`}
+              >
+                {submitStatus === "success" ? (
+                  <CheckCircle size={20} />
+                ) : (
+                  <AlertCircle size={20} />
+                )}
+                <span className="text-sm">{submitMessage}</span>
+              </div>
+            )}
+
             <button
-              type="button"
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors"
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              Send Message
+              {isSubmitting ? (
+                <>
+                  <Loader size={20} className="animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
             </button>
           </form>
 
