@@ -191,9 +191,9 @@ const Card = ({ children, className = "" }) => (
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ from_name: "", from_email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or null
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', or 
   const [submitMessage, setSubmitMessage] = useState("");
 
   // Initialize EmailJS
@@ -212,7 +212,7 @@ export default function App() {
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
-  // Form Handlers
+ // Form Handlers
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -222,14 +222,15 @@ export default function App() {
     e.preventDefault();
     
     // Validation
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+    if (!formData.from_name.trim() || !formData.from_email.trim() || !formData.message.trim()) {
       setSubmitStatus("error");
       setSubmitMessage("Please fill in all fields.");
       setTimeout(() => setSubmitStatus(null), 5000);
       return;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // FIX 1: Check formData.from_email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.from_email.trim())) {
       setSubmitStatus("error");
       setSubmitMessage("Please enter a valid email address.");
       setTimeout(() => setSubmitStatus(null), 5000);
@@ -237,22 +238,26 @@ export default function App() {
     }
 
     setIsSubmitting(true);
-
     try {
       await emailjs.send(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
-          from_name: formData.name,
-          from_email: formData.email,
+          from_name: formData.from_name,
+          from_email: formData.from_email, // FIX 2: Added the underscore
           message: formData.message,
           to_email: import.meta.env.VITE_CONTACT_EMAIL,
-        }
+          // to_email: "import.meta.env.VITE_CONTACT_EMAIL",
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       );
 
       setSubmitStatus("success");
       setSubmitMessage("Message sent successfully! I'll get back to you soon.");
-      setFormData({ name: "", email: "", message: "" });
+      
+      // FIX 3: Reset the state using the correct keys
+      setFormData({ from_name: "", from_email: "", message: "" }); 
+      
       setTimeout(() => setSubmitStatus(null), 5000);
     } catch (error) {
       console.error("Email send failed:", error);
@@ -773,8 +778,9 @@ export default function App() {
                 type="text"
                 id="name"
                 name="from_name"
-                value={formData.name}
+                value={formData.from_name}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="Your Name"
                 disabled={isSubmitting}
@@ -791,8 +797,9 @@ export default function App() {
                 type="email"
                 id="email"
                 name="from_email"
-                value={formData.email}
+                value={formData.from_email}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="you@example.com"
                 disabled={isSubmitting}
@@ -811,6 +818,7 @@ export default function App() {
                 rows="4"
                 value={formData.message}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
                 placeholder="Hi Ola..."
                 disabled={isSubmitting}
