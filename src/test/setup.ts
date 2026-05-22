@@ -1,6 +1,14 @@
 import "@testing-library/jest-dom";
-import { expect, afterEach, vi } from "vitest";
+import { expect, afterEach, vi, beforeAll } from "vitest";
 import { cleanup } from "@testing-library/react";
+
+// Setup environment variables before tests
+beforeAll(() => {
+  process.env.VITE_EMAILJS_PUBLIC_KEY = "test-key";
+  process.env.VITE_EMAILJS_SERVICE_ID = "test-service";
+  process.env.VITE_EMAILJS_TEMPLATE_ID = "test-template";
+  process.env.VITE_CONTACT_EMAIL = "test@example.com";
+});
 
 // Cleanup after each test
 afterEach(() => {
@@ -20,14 +28,4 @@ Object.defineProperty(window, "matchMedia", {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-});
-
-// Mock import.meta.env
-Object.defineProperty(import.meta, "env", {
-  value: {
-    VITE_EMAILJS_PUBLIC_KEY: "test-key",
-    VITE_EMAILJS_SERVICE_ID: "test-service",
-    VITE_EMAILJS_TEMPLATE_ID: "test-template",
-    VITE_CONTACT_EMAIL: "test@example.com",
-  },
 });

@@ -26,9 +26,9 @@ describe("ContactSection Component", () => {
       />
     );
 
-    expect(screen.getByLabelText(/Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Message/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Your Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Hi Ola...")).toBeInTheDocument();
   });
 
   it("should render social links", () => {

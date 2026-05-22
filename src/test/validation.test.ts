@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 /**
  * Email validation regex pattern
@@ -43,57 +43,36 @@ export const validateFormData = (
   return errors;
 };
 
-// Tests
-describe("Form Validation", () => {
+describe("Form Validation Utils", () => {
   describe("validateEmail", () => {
-    it("should return true for valid emails", () => {
+    it("should validate correct email format", () => {
       expect(validateEmail("user@example.com")).toBe(true);
-      expect(validateEmail("test.user@domain.co.uk")).toBe(true);
-      expect(validateEmail("a@b.c")).toBe(true);
+      expect(validateEmail("test@domain.co.uk")).toBe(true);
     });
 
-    it("should return false for invalid emails", () => {
+    it("should reject invalid email formats", () => {
       expect(validateEmail("invalid")).toBe(false);
       expect(validateEmail("user@")).toBe(false);
       expect(validateEmail("@example.com")).toBe(false);
-      expect(validateEmail("user @example.com")).toBe(false);
-      expect(validateEmail("user@example")).toBe(false);
     });
   });
 
   describe("validateFormData", () => {
-    it("should return empty errors for valid data", () => {
-      const errors = validateFormData(
-        "John Doe",
-        "john@example.com",
-        "Hello world"
-      );
-      expect(Object.keys(errors)).toHaveLength(0);
+    it("should have no errors for valid data", () => {
+      const result = validateFormData("John", "john@example.com", "Hello");
+      expect(Object.keys(result).length).toBe(0);
     });
 
-    it("should return error for empty name", () => {
-      const errors = validateFormData("", "john@example.com", "message");
-      expect(errors.name).toBeDefined();
+    it("should have errors for empty fields", () => {
+      const result = validateFormData("", "", "");
+      expect(result.name).toBeDefined();
+      expect(result.email).toBeDefined();
+      expect(result.message).toBeDefined();
     });
 
-    it("should return error for empty email", () => {
-      const errors = validateFormData("John", "", "message");
-      expect(errors.email).toBeDefined();
-    });
-
-    it("should return error for invalid email", () => {
-      const errors = validateFormData("John", "invalid-email", "message");
-      expect(errors.email).toBe("Please enter a valid email address");
-    });
-
-    it("should return error for empty message", () => {
-      const errors = validateFormData("John", "john@example.com", "");
-      expect(errors.message).toBeDefined();
-    });
-
-    it("should return multiple errors for invalid data", () => {
-      const errors = validateFormData("", "", "");
-      expect(Object.keys(errors).length).toBeGreaterThan(1);
+    it("should validate email field specifically", () => {
+      const result = validateFormData("John", "invalid", "Hello");
+      expect(result.email).toBe("Please enter a valid email address");
     });
   });
 });

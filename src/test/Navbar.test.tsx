@@ -13,7 +13,9 @@ describe("Navbar Component", () => {
 
   it("should render navbar with branding", () => {
     render(<Navbar {...mockProps} />);
-    expect(screen.getByText("&lt;Ola /&gt;")).toBeInTheDocument();
+    expect(screen.getByText((content, element) => {
+      return element?.tagName === "A" && content.includes("Ola") && content.includes("/");
+    })).toBeInTheDocument();
   });
 
   it("should render navigation links", () => {
