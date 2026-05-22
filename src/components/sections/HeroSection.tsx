@@ -4,7 +4,11 @@ import { ChevronRight } from "lucide-react";
 
 export const HeroSection: FC = () => {
   return (
-    <section className="pt-32 pb-20 px-6 max-w-6xl mx-auto min-h-[90vh] flex items-center justify-center">
+    <section 
+      id="hero"
+      className="pt-32 pb-20 px-6 max-w-6xl mx-auto min-h-[90vh] flex items-center justify-center"
+      aria-label="Hero section"
+    >
       <div className="w-full max-w-3xl text-center md:text-left md:flex md:items-center md:justify-between gap-12">
         <div className="flex-1 space-y-6">
           <motion.div

@@ -1,6 +1,7 @@
 import { useState, useEffect, FC, ChangeEvent, FormEvent } from "react";
 import emailjs from "@emailjs/browser";
 import { Navbar } from "./components/layout/Navbar";
+import { SkipLink } from "./components/layout/SkipLink";
 import { HeroSection } from "./components/sections/HeroSection";
 import { AboutSection } from "./components/sections/AboutSection";
 import { ProjectsSection } from "./components/sections/ProjectsSection";
@@ -108,6 +109,9 @@ const App: FC = () => {
         darkMode ? "dark bg-slate-950" : "bg-slate-50"
       }`}
     >
+      {/* Skip Link - Accessibility */}
+      <SkipLink />
+
       {/* Navigation */}
       <Navbar
         darkMode={darkMode}
@@ -116,23 +120,26 @@ const App: FC = () => {
         setMobileMenuOpen={setMobileMenuOpen}
       />
 
-      {/* Hero Section */}
-      <HeroSection />
+      {/* Main Content */}
+      <main id="main-content" role="main">
+        {/* Hero Section */}
+        <HeroSection />
 
-      {/* About Section */}
-      <AboutSection />
+        {/* About Section */}
+        <AboutSection />
 
-      {/* Projects Section */}
-      <ProjectsSection />
+        {/* Projects Section */}
+        <ProjectsSection />
 
-      {/* Skills Section */}
-      <SkillsSection />
+        {/* Skills Section */}
+        <SkillsSection />
 
-      {/* Leadership Section */}
-      <LeadershipSection />
+        {/* Leadership Section */}
+        <LeadershipSection />
 
-      {/* Blog Section */}
-      <BlogSection />
+        {/* Blog Section */}
+        <BlogSection />
+      </main>
 
       {/* Contact & Footer */}
       <ContactSection

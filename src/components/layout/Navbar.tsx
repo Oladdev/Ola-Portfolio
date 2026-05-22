@@ -16,6 +16,7 @@ export const Navbar: FC<NavbarProps> = ({
         <a
           href="#"
           className="text-xl font-bold text-slate-900 dark:text-white font-mono hover:text-indigo-500 transition-colors"
+          aria-label="Ola - Portfolio Home"
         >
           &lt;Ola /&gt;
         </a>
@@ -26,7 +27,8 @@ export const Navbar: FC<NavbarProps> = ({
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-1"
+              aria-current={link.href === window.location.hash ? "page" : undefined}
             >
               {link.name}
             </a>

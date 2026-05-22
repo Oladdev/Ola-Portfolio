@@ -6,9 +6,13 @@ export const AboutSection: FC = () => {
     <section
       id="about"
       className="py-20 px-6 bg-slate-100 dark:bg-slate-900/50"
+      aria-labelledby="about-heading"
     >
       <div className="max-w-4xl mx-auto">
-        <SectionHeading subtitle>About Me</SectionHeading>
+        <h2 id="about-heading" className="text-3xl md:text-4xl font-bold tracking-tight mb-3 text-slate-900 dark:text-white">
+          About Me
+        </h2>
+        <div className="h-1 w-20 bg-indigo-500 rounded-full mb-12"></div>
         <div className="prose dark:prose-invert max-w-none text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
           <p className="mb-6">
             I&apos;m{" "}

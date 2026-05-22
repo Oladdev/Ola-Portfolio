@@ -92,13 +92,15 @@ export const ContactSection: FC<ContactSectionProps> = ({
         <form
           className="max-w-md mx-auto space-y-4 mb-20 text-left"
           onSubmit={handleFormSubmit}
+          aria-label="Contact form"
+          noValidate
         >
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >
-              Name
+              Name <span className="text-red-500" aria-label="required">*</span>
             </label>
             <input
               type="text"
@@ -110,6 +112,7 @@ export const ContactSection: FC<ContactSectionProps> = ({
               className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
               placeholder="Your Name"
               disabled={isSubmitting}
+              aria-required="true"
             />
           </div>
           <div>
@@ -117,7 +120,7 @@ export const ContactSection: FC<ContactSectionProps> = ({
               htmlFor="email"
               className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >
-              Email
+              Email <span className="text-red-500" aria-label="required">*</span>
             </label>
             <input
               type="email"
@@ -129,6 +132,7 @@ export const ContactSection: FC<ContactSectionProps> = ({
               className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
               placeholder="you@example.com"
               disabled={isSubmitting}
+              aria-required="true"
             />
           </div>
           <div>
@@ -136,7 +140,7 @@ export const ContactSection: FC<ContactSectionProps> = ({
               htmlFor="message"
               className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
             >
-              Message
+              Message <span className="text-red-500" aria-label="required">*</span>
             </label>
             <textarea
               id="message"
@@ -148,6 +152,7 @@ export const ContactSection: FC<ContactSectionProps> = ({
               className="w-full px-4 py-2 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition-shadow"
               placeholder="Hi Ola..."
               disabled={isSubmitting}
+              aria-required="true"
             ></textarea>
           </div>
 
@@ -159,11 +164,13 @@ export const ContactSection: FC<ContactSectionProps> = ({
                   ? "bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-200"
                   : "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200"
               }`}
+              role="alert"
+              aria-live="polite"
             >
               {submitStatus === "success" ? (
-                <CheckCircle size={20} />
+                <CheckCircle size={20} aria-hidden="true" />
               ) : (
-                <AlertCircle size={20} />
+                <AlertCircle size={20} aria-hidden="true" />
               )}
               <span className="text-sm">{submitMessage}</span>
             </div>
@@ -172,11 +179,12 @@ export const ContactSection: FC<ContactSectionProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-950"
+            aria-busy={isSubmitting}
           >
             {isSubmitting ? (
               <>
-                <Loader size={20} className="animate-spin" />
+                <Loader size={20} className="animate-spin" aria-hidden="true" />
                 Sending...
               </>
             ) : (
